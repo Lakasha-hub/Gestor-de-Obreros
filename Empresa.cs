@@ -8,15 +8,25 @@ namespace TP_FINAL_ALGORITMOS
 	/// </summary>
 	public class Empresa
 	{
-		//Propiedades
-		private ArrayList empleados { get; set; }
-		private ArrayList obras { get; set; }
+		//Propiedades de Empresa
+		private ArrayList empleados;
+		private ArrayList obras;
+		private ArrayList gruposObreros;
 		
+		//Constructor de Empresa
 		public Empresa()
 		{
 			this.empleados = new ArrayList();
 			this.obras = new ArrayList();
+			this.gruposObreros = new ArrayList();
 		}
+		
+		//Get de propiedades de Empresa
+		public ArrayList Empleados{ get{ return empleados; } }
+		public ArrayList Obras{ get{ return obras; } }
+		public ArrayList GruposObreros{ get{ return gruposObreros; } }
+		
+		/* METODOS DE EMPRESA */
 		
 		// Listado de Obras en curso
 		public void ObrasEnCurso()
@@ -26,7 +36,7 @@ namespace TP_FINAL_ALGORITMOS
 			}else{
 				foreach (Obra o in obras)
 				{
-					if (o.estado_avance < 100)
+					if (o.EstadoAvance < 100)
 					{
 						o.ImprimirPropiedades();
 					}
@@ -43,7 +53,7 @@ namespace TP_FINAL_ALGORITMOS
 			}else{
 				foreach (Obra o in obras)
 				{
-					if (o.estado_avance == 100)
+					if (o.EstadoAvance == 100)
 					{
 						o.ImprimirPropiedades();
 					}
@@ -52,49 +62,56 @@ namespace TP_FINAL_ALGORITMOS
 			
 		}
 		
-		// Porcentaje de obras en remodelacion
+		//Porcentaje de obras en remodelacion
 		public void PorcentajeObrasRemodelacion()
 		{
-			int sumatoria = 0;
-			int contador=0;
+			int totalObras = 0;
+			int contadorObrasRemodelacion = 0;
 			double porcentaje;
+			
 			foreach (Obra o in obras)
 			{
-				if (o.estado_avance < 100)
+				if (o.Tipo == "remodelacion")
 				{
-					sumatoria +=o.estado_avance;
-					contador++;
+					contadorObrasRemodelacion++;
 				}
+				totalObras++;
 			}
-			porcentaje = sumatoria/contador;
+			porcentaje = (100 * contadorObrasRemodelacion) / totalObras;
 			Console.WriteLine("Porcentaje de obras en remodelacion: " + porcentaje + "%");
 		}
 		
 		// Modificar Porcentaje de Obra
-		public void modPorcentajeobra(int cod_inter, int porcentaje)
+		public void ModPorcentajeObra(int codigoObra, int porcentaje)
 		{
-			/*if(porcentaje > 100)
-			{
-				// Acá se lanza una excepción
-				Console.WriteLine("El porcentaje no debe ser mayor al 100%");
-				break;
-			}*/
-			
-			foreach (Obra o in obras)
-			{
-				if (o.cod_interno == cod_inter)
+			try {
+				
+				if(porcentaje > 100 || porcentaje < 0)
 				{
-					if(o.estado_avance == 100)  //????? CONSULTAR ????????
+					// Acá se lanza una excepción
+					throw new ObrasException("El porcentaje debe ser un número entre 0 y 100");
+				}
+				
+				//Busqueda de Obra
+				foreach (Obra o in obras)
+				{
+					if (o.Codigo == codigoObra)
 					{
-						// Acá se lanza una excepción
-						Console.WriteLine("No se puede modificar el estado de la obra por que se encuentra finalizada");
-					}
-					else
-					{
-						o.estado_avance = porcentaje;
-						Console.WriteLine("Se modificó el estado de la obra correctamente");
+						if(o.EstadoAvance == 100)
+						{
+							// Acá se lanza una excepción
+							throw new ObrasException("No se puede modificar el estado de la obra por que se encuentra finalizada");
+						}
+						else
+						{
+							//Modificación del estado de avance de la Obra
+							o.EstadoAvance = porcentaje;
+							Console.WriteLine("Se modificó el estado de la obra correctamente");
+						}
 					}
 				}
+			} catch (ObrasException e) {
+				Console.WriteLine(e.motivo);
 			}
 		
 		}
@@ -126,46 +143,153 @@ namespace TP_FINAL_ALGORITMOS
 		}
 		
 		//Agregar un Obrero
-		public void agregarobrero()
+		public void AgregarObrero(int nroGrupo, Obrero nuevoObrero)
 		{
-			Console.Write("Ingrese el nombre: ");
-            string nombre = Console.ReadLine();
-
-            Console.Write("Ingrese el apellido: ");
-            string apellido = Console.ReadLine();
-
-            Console.Write("Ingrese el DNI: ");
-            int dni = int.Parse(Console.ReadLine());
-
-            Console.Write("Ingrese el número de legajo: ");
-            int legajo = int.Parse(Console.ReadLine());
-
-            Console.Write("Ingrese el sueldo: ");
-            double sueldo = double.Parse(Console.ReadLine());
-
-            Console.Write("Ingrese el cargo: ");
-            string cargo = Console.ReadLine();
-
-            Console.Write("Ingrese la bonificación: ");
-            double bonificacion = double.Parse(Console.ReadLine());
-
-            Console.Write("Ingrese el código de la obra: ");
-            int codigoObra = int.Parse(Console.ReadLine());
-            Obrero nuevoObrero = new Obrero(nombre, apellido, dni, legajo, sueldo, cargo);
+            //Se lo agrega a los empleados de la empresa
             empleados.Add(nuevoObrero);
+            
+            //Se lo agrega al grupo de obreros
+            GrupoObrero grupo = (GrupoObrero)gruposObreros[nroGrupo - 1];
+            grupo.AgregarObrero(nuevoObrero);
+            Console.WriteLine("Se agrego al Obrero correctamente");
+		}
+		
+		//Agregar un Jefe
+		public void AgregarJefe(Obrero nuevoJefe)
+		{
+			try {
+				//obraSinJefe indica que hay obras libres
+				bool obraSinJefe = false;
+				for(int i = 0; i < obras.Count; i++){
+					Obra o = (Obra)obras[i];
+					//Se asigna el nuevo Jefe a una obra sin Jefe
+					if(o.DniJefe == 0)
+					{
+						obraSinJefe = true;
+						o.DniJefe = nuevoJefe.Dni;
+					}
+				}
+				
+				//Si hay obras libres se contrata al Jefe
+				if(obraSinJefe)
+				{
+					//Se agrega el nuevo Jefe a la Empresa
+					empleados.Add(nuevoJefe);
+					Console.WriteLine("Se contrato al Jefe correctamente");
+				}else
+				{
+					throw new JefeException("No hay Obras disponibles para las cuales asignarle un nuevo Jefe");
+				}
+			} catch (JefeException e)
+			{
+				Console.WriteLine(e.motivo);
+			}
 			
 		}
 		
-		/*public void agregarjefe()
+		//Eliminar un Obrero
+		public void EliminarObrero(int dni)
 		{
-			Obrero nuevo_jefe = new jefe( //propiedades...);
-			
-			Console.Write("ingrese un nombre:");
-			string a = Console.ReadLine();
-			
-			//crear uno para cada uno.
-			empleados.add(nuevo_jefe);
-			
-		}*/
+			try {
+				bool obreroEliminadoDeEmpresa = false;
+				bool obreroEliminadoDeGrupo = false;
+				
+				//Busqueda del obrero en empleados
+				foreach(Obrero o in empleados)
+				{
+					if(o.Dni == dni)
+					{
+						//Se elimina al obrero de empleados
+						empleados.Remove(o);
+						obreroEliminadoDeEmpresa = true;
+						break;
+					}
+				}
+				
+				//Busqueda del obrero en grupo de obreros
+				foreach(GrupoObrero grupo in gruposObreros)
+				{
+					//Devuelve true si elimina al obrero del grupo
+					obreroEliminadoDeGrupo = grupo.EliminarObrero(dni);
+					if(obreroEliminadoDeGrupo)
+					{
+						break;
+					}
+				}
+				
+				//Respuesta al usuario
+				if(obreroEliminadoDeEmpresa && obreroEliminadoDeGrupo)
+				{
+					Console.WriteLine("El Obrero ha sido eliminado correctamente");
+				}else
+				{
+					throw new ObrerosException("No se encontro un obrero con el dni " + dni);
+				}
+			} catch (ObrerosException e) 
+			{
+				Console.WriteLine(e.motivo);
+			}
+		}
+		
+		//Eliminar un Jefe
+		public void EliminarJefe(int dni)
+		{
+			try {
+				
+				bool jefeEliminadoDeEmpresa = false;
+				bool jefeEliminadoDeObra = false;
+				
+				//Busqueda del Jefe en empleados
+				foreach(Obrero o in empleados)
+				{
+					if(o.Dni == dni)
+					{
+						//Se elimina al Jefe de empleados
+						empleados.Remove(o);
+						jefeEliminadoDeEmpresa = true;
+						break;
+					}
+				}
+				
+				//Busqueda del Jefe en las obras
+				foreach(Obra o in obras)
+				{
+					if(o.DniJefe == dni)
+					{
+						//Se desvincula al Jefe de la Obra
+						o.DniJefe = 0;
+						jefeEliminadoDeObra = true;
+						break;
+					}
+				}
+				
+				//Respuesta al usuario
+				if(jefeEliminadoDeEmpresa && jefeEliminadoDeObra)
+				{
+					Console.WriteLine("El Jefe ha sido eliminado correctamente");
+				}else
+				{
+					throw new JefeException("No se encontro un Jefe con el dni " + dni);
+				}
+			} catch (JefeException e) 
+			{
+				Console.WriteLine(e.motivo);
+			}
+		}
+		
+		//Agregar una Obra a empresa y Asignarle un Grupo de Obreros Libre
+		public void AgregarObra(Obra nuevaObra){
+			foreach(GrupoObrero g in gruposObreros){
+				//Se busca un grupo libre
+				if(g.Codigo == 0){
+					//Se asigna el Grupo a la nueva Obra
+					g.Codigo = nuevaObra.Codigo;
+					//Se agrega a las Obras de la Empresa la nueva Obra
+					obras.Add(nuevaObra);
+					break;
+				}
+			}
+		}
 	}
 }
+

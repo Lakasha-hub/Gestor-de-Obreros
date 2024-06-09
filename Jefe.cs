@@ -9,15 +9,21 @@ namespace TP_FINAL_ALGORITMOS
 	//Herencia de la clase padre Obrero
 	public class Jefe : Obrero
 	{
-		//Propiedades
-		private double bonificacion { get; set; }
+		//Propiedades de Jefe
+		private double bonificacion;
 		
-		//Constructor
-		public Jefe(string nombre, string apellido, int dni, int legajo, double sueldo, string cargo, double bonificacion): base (nombre, apellido, dni, legajo, sueldo, cargo)
+		//Constructor de Jefe, la propiedad cargo de Jefe siempre será "Jefe de Obra" por lo cual se lo envía directamente al constructor de Obrero
+		public Jefe(string nombre, string apellido, int dni, int legajo, double sueldo, double bonificacion): base (nombre, apellido, dni, legajo, sueldo, "Jefe de Obra")
 		{
            this.bonificacion = bonificacion;
 		}
 		
+		//Get y Set de las propiedades
+		public double Bonificacion{ set{ bonificacion = value; } get{ return bonificacion; } }
+		
+		/* METODOS DE JEFE */
+		
+		//Metodo que indica si tiene bonificación, en caso de los jefes si.
 		public override bool TieneBonificacion(){
 			return true;
 		}
@@ -27,3 +33,4 @@ namespace TP_FINAL_ALGORITMOS
 		}
 	}
 }
+
