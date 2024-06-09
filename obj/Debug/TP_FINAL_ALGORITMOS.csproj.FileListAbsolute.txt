@@ -1,5 +1,0 @@
-C:\Users\garbarino\Documents\SharpDevelop Projects\TP_FINAL_ALGORITMOS\TP_FINAL_ALGORITMOS\obj\Debug\TP_FINAL_ALGORITMOS.csprojResolveAssemblyReference.cache
-C:\Users\garbarino\Documents\SharpDevelop Projects\TP_FINAL_ALGORITMOS\TP_FINAL_ALGORITMOS\bin\Debug\TP_FINAL_ALGORITMOS.exe
-C:\Users\garbarino\Documents\SharpDevelop Projects\TP_FINAL_ALGORITMOS\TP_FINAL_ALGORITMOS\bin\Debug\TP_FINAL_ALGORITMOS.pdb
-C:\Users\garbarino\Documents\SharpDevelop Projects\TP_FINAL_ALGORITMOS\TP_FINAL_ALGORITMOS\obj\Debug\TP_FINAL_ALGORITMOS.exe
-C:\Users\garbarino\Documents\SharpDevelop Projects\TP_FINAL_ALGORITMOS\TP_FINAL_ALGORITMOS\obj\Debug\TP_FINAL_ALGORITMOS.pdb
