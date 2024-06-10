@@ -9,12 +9,12 @@ namespace TP_FINAL_ALGORITMOS
 	{
 		//Propiedades de Obra
 		public string nombre;
-        public int dniPropietario;
-        public int codigo;
-        public string tipo;
-        public int estadoAvance;
-        public int dniJefe;
-        public double costo;
+        private int dniPropietario;
+        private int codigo;
+        private string tipo;
+        private int estadoAvance;
+        private int dniJefe;
+        private double costo;
         
 		//Constructor de Obra
 		public Obra(string nombre, int dniPropietario, int codigo, string tipo, int estadoAvance, double costo)
