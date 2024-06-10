@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 
 namespace TP_FINAL_ALGORITMOS
@@ -66,18 +66,20 @@ namespace TP_FINAL_ALGORITMOS
 		public void PorcentajeObrasRemodelacion()
 		{
 			int totalObras = 0;
-			int contadorObrasRemodelacion = 0;
+			int contadorObrasRemodelacionSinFinalizar = 0;
 			double porcentaje;
 			
 			foreach (Obra o in obras)
 			{
-				if (o.Tipo == "remodelacion")
-				{
-					contadorObrasRemodelacion++;
-				}
+				if(o.EstadoAvance < 100){
+					if (o.Tipo == "remodelacion")
+					{
+						contadorObrasRemodelacionSinFinalizar++;
+					}
 				totalObras++;
+				}
 			}
-			porcentaje = (100 * contadorObrasRemodelacion) / totalObras;
+			porcentaje = (100 * contadorObrasRemodelacionSinFinalizar) / totalObras;
 			Console.WriteLine("Porcentaje de obras en remodelacion: " + porcentaje + "%");
 		}
 		
@@ -86,6 +88,7 @@ namespace TP_FINAL_ALGORITMOS
 		{
 			try {
 				
+				bool obraEncontrada = false;
 				if(porcentaje > 100 || porcentaje < 0)
 				{
 					// Acá se lanza una excepción
@@ -97,19 +100,22 @@ namespace TP_FINAL_ALGORITMOS
 				{
 					if (o.Codigo == codigoObra)
 					{
+						obraEncontrada = true;
 						if(o.EstadoAvance == 100)
 						{
 							// Acá se lanza una excepción
 							throw new ObrasException("No se puede modificar el estado de la obra por que se encuentra finalizada");
 						}
-						else
-						{
-							//Modificación del estado de avance de la Obra
-							o.EstadoAvance = porcentaje;
-							Console.WriteLine("Se modificó el estado de la obra correctamente");
-						}
+						//Modificación del estado de avance de la Obra
+						o.EstadoAvance = porcentaje;
+						Console.WriteLine("Se modificó el estado de la obra correctamente");
 					}
 				}
+				
+				if(!obraEncontrada){
+					throw new ObrasException("No se encontró una obra con el código: " + codigoObra);
+				}
+				
 			} catch (ObrasException e) {
 				Console.WriteLine(e.motivo);
 			}
